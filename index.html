@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rajeev Ranjan Pandey - Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000; /* Black background */
+            color: white; /* White text color for contrast */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+
+        nav a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        section {
+            padding: 20px;
+            margin: 20px;
+            background-color: #222; /* Dark background for sections */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+        }
+
+        section h2 {
+            text-align: center;
+            color: #007BFF;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative; /* Makes footer scroll with page */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #444; /* Dark background for inputs */
+            color: white; /* White text in inputs */
+        }
+
+        .contact-form button {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .contact-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Ensure contact section does not overlap footer */
+        #contact {
+            margin-bottom: 100px; /* Adjust space at the bottom */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Rajeev Ranjan Pandey</h1>
+    <p>Innovator | Engineer | Researcher</p>
+</header>
+
+<nav>
+    <a href="#about">About Me</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<section id="about">
+    <div class="container">
+        <h2>About Me</h2>
+        <p>Hello! I am Rajeev Ranjan Pandey, an engineer, innovator, and researcher. I am passionate about technology and creating solutions that make a real-world impact. I love working on projects related to energy, AI, and more. This is my personal website where you can learn more about my work and reach out to me.</p>
+    </div>
+</section>
+
+<section id="projects">
+    <div class="container">
+        <h2>My Projects</h2>
+        <p>Below are some of the exciting projects I'm currently working on:</p>
+        <ul>
+            <li><strong>Energy Harvesting Drone:</strong> AI-optimized drone for efficient energy collection.</li>
+            <li><strong>Blockchain-based Microgrid:</strong> A decentralized energy trading system.</li>
+            <li><strong>EV Charging Optimization:</strong> Using AI to optimize energy allocation across EV charging stations.</li>
+        </ul>
+
+        <!-- Add the new section for your PyPI library -->
+        <h2>My Linear Equation Solver Library</h2>
+        <p>I've developed a Python library to solve linear equations. You can install it using <strong>pip</strong>:</p>
+        <pre><code>pip install unique-linear-solver==1.0.1 </code></pre>
+        <p>For more details, check it out on <a href="https://pypi.org/project/unique-linear-solver/1.0.1/" target="_blank">PyPI</a>.</p>
+    </div>
+</section>
+
+<section id="contact">
+    <div class="container">
+        <h2>Contact Me</h2>
+        <form class="contact-form" action="https://formspree.io/f/xovvobkj" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<audio id="musicplayer" autoplay loop>
+  <source src="https://drive.google.com/uc?export=download&id=1DaLXnlwbA-YVuOAVma-YwPSs-ReIaSl8" type="audio/mp3">
+  Your browser does not support the audio element.
+</audio>
+
+<footer>
+    <p>&copy; 2025 Rajeev Ranjan Pandey. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
