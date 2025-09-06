@@ -5,6 +5,178 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rajeev Ranjan Pandey - Welcome</title>
   <style>
+
+    <!-- Transmission towers + animated power flow background -->
+<style>
+  /* Put this near the bottom of your existing CSS (or keep here inline) */
+  svg#towers-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;                 /* behind content */
+    pointer-events: none;       /* won't intercept clicks */
+    opacity: 0.14;              /* adjust visibility */
+    transition: opacity .3s;
+  }
+
+  /* Customize these CSS variables to change look and speed */
+  :root {
+    --flow-speed: 3.5s;        /* lower = faster flow */
+    --glow-color: #22d3ee;     /* color of the flowing power */
+    --tower-color: #e6eef8;
+    --line-color: rgba(34,211,238,0.9);
+  }
+
+  /* dashed-flow animation (animates dash offset) */
+  .flow-line {
+    stroke-dasharray: 8 10;
+    stroke-linecap: round;
+    animation: dash-move var(--flow-speed) linear infinite;
+  }
+  @keyframes dash-move {
+    to { stroke-dashoffset: -200; }
+  }
+
+  /* subtle glow pulse on lines */
+  .flow-line-glow {
+    filter: drop-shadow(0 0 6px var(--glow-color));
+    opacity: 0.9;
+    transition: opacity .2s;
+  }
+  @keyframes glowPulse {
+    0%   { opacity: 0.6; stroke-width: 3.5; }
+    50%  { opacity: 1;   stroke-width: 5; }
+    100% { opacity: 0.6; stroke-width: 3.5; }
+  }
+  .flow-line-glow { animation: glowPulse calc(var(--flow-speed) * 1.2) ease-in-out infinite; }
+
+  /* tower styling */
+  .tower { fill: none; stroke: var(--tower-color); stroke-width: 2.2; opacity: 0.95; }
+  .tower-plate { fill: var(--tower-color); opacity:.12; }
+
+  /* small glowing markers that travel along lines (SVG animateMotion circles) */
+  .power-dot { fill: var(--glow-color); opacity: 0.95; filter: drop-shadow(0 0 6px var(--glow-color)); }
+</style>
+
+<svg id="towers-bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <!-- grid / background subtle shapes -->
+  <defs>
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.95)"/>
+      <stop offset="50%" stop-color="rgba(99,102,241,0.9)"/>
+      <stop offset="100%" stop-color="rgba(124,58,237,0.85)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Transmission lines (paths use % coordinates mapped to viewBox) -->
+  <!-- Path A: left to center -->
+  <path id="lineA" class="flow-line flow-line-glow" d="M120 360 C 300 240, 520 240, 700 320" stroke="url(#flowGrad)" stroke-width="3.5" fill="none" />
+  <!-- Path B: center to right -->
+  <path id="lineB" class="flow-line flow-line-glow" d="M700 320 C 840 380, 1120 380, 1360 460" stroke="url(#flowGrad)" stroke-width="3.5" fill="none" />
+  <!-- Lower interconnect -->
+  <path id="lineC" class="flow-line" d="M120 560 C 360 520, 620 540, 880 520, 1120 500, 1360 480" stroke="rgba(34,211,238,0.45)" stroke-width="2.2" fill="none" />
+
+  <!-- Towers: simple stylized towers with a plate for silhouette -->
+  <!-- Left tower -->
+  <g transform="translate(120,360) scale(1.05)">
+    <polygon class="tower-plate" points="-22,60 22,60 40,-80 -40,-80" />
+    <g class="tower" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M -30 60 L 0 -80 L 30 60" />
+      <path d="M -30 10 L 30 10" />
+      <path d="M -20 40 L 20 40" />
+      <path d="M -10 25 L 10 25" />
+      <path d="M 0 -80 L 0 60" />
+    </g>
+  </g>
+
+  <!-- Center tower -->
+  <g transform="translate(700,320) scale(1.12)">
+    <polygon class="tower-plate" points="-26,64 26,64 46,-84 -46,-84" />
+    <g class="tower" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M -34 64 L 0 -84 L 34 64" />
+      <path d="M -34 14 L 34 14" />
+      <path d="M -20 44 L 20 44" />
+      <path d="M -10 28 L 10 28" />
+      <path d="M 0 -84 L 0 64" />
+    </g>
+  </g>
+
+  <!-- Right tower -->
+  <g transform="translate(1360,460) scale(1.05)">
+    <polygon class="tower-plate" points="-22,60 22,60 40,-80 -40,-80" />
+    <g class="tower" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M -30 60 L 0 -80 L 30 60" />
+      <path d="M -30 10 L 30 10" />
+      <path d="M -20 40 L 20 40" />
+      <path d="M -10 25 L 10 25" />
+      <path d="M 0 -80 L 0 60" />
+    </g>
+  </g>
+
+  <!-- Moving power dots (one per main path) -->
+  <!-- Dot on lineA -->
+  <circle r="5" class="power-dot">
+    <animateMotion dur="2.6s" repeatCount="indefinite" rotate="auto">
+      <mpath xlink:href="#lineA" />
+    </animateMotion>
+  </circle>
+
+  <!-- Dot on lineB (slower) -->
+  <circle r="6" class="power-dot" style="opacity:0.95">
+    <animateMotion dur="3.6s" repeatCount="indefinite" rotate="auto">
+      <mpath xlink:href="#lineB" />
+    </animateMotion>
+  </circle>
+
+  <!-- Multiple smaller dots on the lower interconnect (staggered) -->
+  <g>
+    <circle r="3" class="power-dot" style="opacity:0.85">
+      <animateMotion dur="2.8s" repeatCount="indefinite" begin="0s">
+        <mpath xlink:href="#lineC" />
+      </animateMotion>
+    </circle>
+    <circle r="2.6" class="power-dot" style="opacity:0.7">
+      <animateMotion dur="2.8s" repeatCount="indefinite" begin="0.9s">
+        <mpath xlink:href="#lineC" />
+      </animateMotion>
+    </circle>
+    <circle r="3.4" class="power-dot" style="opacity:0.82">
+      <animateMotion dur="2.8s" repeatCount="indefinite" begin="1.8s">
+        <mpath xlink:href="#lineC" />
+      </animateMotion>
+    </circle>
+  </g>
+</svg>
+
+<script>
+  /* Small API: adjust speed and color at runtime if you want */
+  window.TowerFlow = {
+    setSpeed: (secs) => {
+      document.documentElement.style.setProperty('--flow-speed', secs + 's');
+    },
+    setColor: (hexOrCss) => {
+      document.documentElement.style.setProperty('--glow-color', hexOrCss);
+      // also update gradient stops if you want stronger color match:
+      const stops = document.querySelectorAll('#towers-bg stop');
+      if (stops.length) {
+        stops[0].setAttribute('stop-color', hexOrCss);
+      }
+    },
+    setOpacity: (val) => {
+      const svg = document.getElementById('towers-bg');
+      if (svg) svg.style.opacity = val;
+    }
+  };
+
+  // Example: if you want to speed up on big screens automatically:
+  (function adjustForWidth(){
+    const w = window.innerWidth;
+    if (w > 1400) { window.TowerFlow.setSpeed(2.8); window.TowerFlow.setOpacity(0.18); }
+    else if (w < 800) { window.TowerFlow.setSpeed(4.8); window.TowerFlow.setOpacity(0.12); }
+  })();
+</script>
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
