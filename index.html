@@ -1,248 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rajeev Ranjan Pandey - Welcome</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #000;
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganesh Kumar Pandey</title>
 
-    header {
-      background-color: #007BFF;
-      color: white;
-      text-align: center;
-      padding: 20px 0;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-    header h1 {
-      margin: 0;
-      font-size: 2.5em;
-    }
+<style>
+:root{
+  --bg:#0a0a0a;
+  --card:#121212;
+  --accent:#00ffd5;
+  --text:#eaeaea;
+  --muted:#888;
+}
 
-    nav {
-      display: flex;
-      justify-content: center;
-      background-color: #333;
-    }
+*{margin:0;padding:0;box-sizing:border-box;}
 
-    nav a {
-      color: white;
-      padding: 14px 20px;
-      text-decoration: none;
-      text-align: center;
-    }
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
 
-    nav a:hover {
-      background-color: #ddd;
-      color: black;
-    }
+/* subtle gradient glow */
+body::before{
+  content:"";
+  position:fixed;
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,255,213,0.08),transparent 70%);
+  top:-100px;left:-100px;
+  z-index:0;
+}
 
-    section {
-      padding: 20px;
-      margin: 20px;
-      background-color: #222;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-      flex-grow: 1;
-      position: relative;
-      z-index: 2;
-    }
+header{
+  text-align:center;
+  padding:80px 20px 40px;
+  position:relative;
+  z-index:1;
+}
 
-    section h2 {
-      text-align: center;
-      color: #007BFF;
-    }
+header h1{
+  font-size:2.8rem;
+  font-weight:600;
+}
 
-    footer {
-      background-color: #333;
-      color: white;
-      text-align: center;
-      padding: 10px 0;
-      position: relative;
-      z-index: 2;
-    }
+header p{
+  margin-top:10px;
+  color:var(--muted);
+}
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+nav{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  padding:15px;
+  background:#0f0f0f;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
 
-    .contact-form input, .contact-form textarea {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #444;
-      color: white;
-    }
+nav a{
+  color:#ccc;
+  text-decoration:none;
+  font-size:0.95rem;
+  transition:0.3s;
+}
 
-    .contact-form button {
-      background-color: #007BFF;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+nav a:hover{
+  color:var(--accent);
+}
 
-    .contact-form button:hover {
-      background-color: #0056b3;
-    }
+section{
+  padding:70px 10%;
+  position:relative;
+  z-index:1;
+}
 
-    #contact {
-      margin-bottom: 100px;
-    }
+h2{
+  font-size:1.6rem;
+  margin-bottom:20px;
+  border-left:3px solid var(--accent);
+  padding-left:10px;
+}
 
-    /* Firework canvas styling */
-    canvas#fireworksCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-  </style>
+.card{
+  background:var(--card);
+  padding:22px;
+  margin:20px 0;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.05);
+  transition:0.35s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(0,255,213,0.3);
+  box-shadow:0 0 25px rgba(0,255,213,0.08);
+}
+
+.card b{
+  font-weight:600;
+}
+
+.small{
+  font-size:0.9rem;
+  color:var(--muted);
+}
+
+.highlight{
+  border:1px solid rgba(0,255,213,0.5);
+  background:linear-gradient(145deg,#0f1f1c,#0a0a0a);
+}
+
+footer{
+  text-align:center;
+  padding:30px;
+  color:#666;
+}
+
+/* subtle fade animation */
+.fade{
+  opacity:0;
+  transform:translateY(20px);
+  animation:fadeIn 0.8s ease forwards;
+}
+
+.fade:nth-child(2){animation-delay:0.2s;}
+.fade:nth-child(3){animation-delay:0.4s;}
+.fade:nth-child(4){animation-delay:0.6s;}
+
+@keyframes fadeIn{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+</style>
 </head>
+
 <body>
 
-<header>
-  <h1>Rajeev Ranjan Pandey</h1>
-  <p>Innovator | Engineer | Researcher</p>
+<header class="fade">
+  <h1>Ganesh Kumar Pandey</h1>
+  <p>Inventor | Power Systems & Energy Networks | Optimization & AI-Driven Decision Systems</p>
 </header>
 
 <nav>
-  <a href="#about">About Me</a>
+  <a href="#about">About</a>
+  <a href="#research">Research</a>
   <a href="#projects">Projects</a>
+  <a href="#publications">Publications</a>
+  <a href="#patent">Patent</a>
   <a href="#contact">Contact</a>
 </nav>
 
-<section id="about">
-  <div class="container">
-    <h2>About Me</h2>
-    <p>Hello! I am Rajeev Ranjan Pandey, an engineer, innovator, and researcher. I am passionate about technology and creating solutions that make a real-world impact. I love working on projects related to energy, AI, and more. This is my personal website where you can learn more about my work and reach out to me.</p>
-  </div>
+<section id="about" class="fade">
+  <h2>About</h2>
+  <p>
+I work on system-level modeling and optimization of large-scale energy networks,
+focusing on decentralized coordination, EV charging, and cyber-physical infrastructure.
+My research integrates mathematical optimization, metaheuristic design, and structured AI.
+  </p>
+
+  <p class="small">
+Focus: physically consistent modeling, scalable algorithms, and decision reliability in real-world systems.
+  </p>
 </section>
 
-<section id="projects">
-  <div class="container">
-    <h2>My Projects</h2>
-    <p>Below are some of the exciting projects I'm currently working on:</p>
-    <ul>
-      <li><strong>Energy Harvesting Drone:</strong> AI-optimized drone for efficient energy collection.</li>
-      <li><strong>Blockchain-based Microgrid:</strong> A decentralized energy trading system.</li>
-      <li><strong>EV Charging Optimization:</strong> Using AI to optimize energy allocation across EV charging stations.</li>
-    </ul>
+<section id="research" class="fade">
+  <h2>Research Areas</h2>
 
-    <h2>My Linear Equation Solver Library</h2>
-    <p>I've developed a Python library to solve linear equations. You can install it using <strong>pip</strong>:</p>
-    <pre><code>pip install unique-linear-solver==1.0.1</code></pre>
-    <p>For more details, check it out on <a href="https://pypi.org/project/unique-linear-solver/1.0.1/" target="_blank">PyPI</a>.</p>
+  <div class="card">Decentralized Energy Systems & Smart Grids</div>
+  <div class="card">Coupled Traffic–Power Network Optimization</div>
+  <div class="card">Metaheuristic Algorithms (TFO, PSO)</div>
+  <div class="card">AI for Structured Temporal Systems</div>
+
+</section>
+
+<section id="projects" class="fade">
+  <h2>Key Systems</h2>
+
+  <div class="card">
+    <b>EV Charging Coordination</b><br>
+    Voltage-aware decentralized optimization under grid constraints in coupled networks.
+  </div>
+
+  <div class="card">
+    <b>Blockchain Energy Trading</b><br>
+    Peer-to-peer trading framework with storage and grid interaction modeling.
+  </div>
+
+  <div class="card">
+    <b>Tiger Footprint Optimization (TFO)</b><br>
+    Adaptive metaheuristic for nonlinear engineering optimization.
   </div>
 
 </section>
 
+<section id="publications" class="fade">
+  <h2>Publications</h2>
 
-<section id="contact">
-  <div class="container">
-    <h2>Contact Me</h2>
-    <form class="contact-form" action="https://formspree.io/f/xovvobkj" method="POST">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="email" name="email" placeholder="Your Email" required>
-      <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
+  <div class="card">
+    <b>Blockchain-Enabled Peer-to-Peer Energy Trading</b><br>
+    <span class="small">Sustainable Energy, Grids and Networks — Under Review</span>
   </div>
+
+  <div class="card">
+    <b>Causality-Constrained Attention for Structured Systems</b><br>
+    <span class="small">IEEE Transactions on Artificial Intelligence — Under Review</span>
+  </div>
+
+  <div class="card">
+    <b>Adaptive Probe Placement Search (TFO)</b><br>
+    <span class="small">Engineering Applications of AI — Submitted</span>
+  </div>
+
 </section>
 
-<audio id="musicplayer" autoplay loop>
-@@ -158,12 +170,78 @@ <h2>Contact Me</h2>
-</audio>
+<section id="patent" class="fade">
+  <h2>Patent</h2>
+
+  <div class="card highlight">
+    <b>Causality-Constrained Attention-Based System for Counterfactual Decision Support</b><br>
+    <span class="small">Indian Patent (Provisional Filed)</span>
+    <p class="small">
+    Enforces temporal and structural feasibility within attention mechanisms,
+    enabling consistent counterfactual reasoning in engineered systems.
+    </p>
+  </div>
+
+</section>
+
+<section id="contact" class="fade">
+  <h2>Contact</h2>
+  <p>Email: ganeshpandey.ee@gmail.com</p>
+</section>
 
 <footer>
-  <p>&copy; 2025 Rajeev Ranjan Pandey. All Rights Reserved.</p>
+  © 2026 Ganesh Kumar Pandey
 </footer>
-
-<canvas id="fireworksCanvas"></canvas>
-
-<script>
-  const canvas = document.getElementById("fireworksCanvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  class Particle {
-    constructor(x, y, color, speed, angle) {
-      this.x = x;
-      this.y = y;
-      this.color = color;
-      this.radius = 2;
-      this.speed = speed;
-      this.angle = angle;
-      this.opacity = 1;
-      this.gravity = 0.02;
-    }
-    update() {
-      this.x += Math.cos(this.angle) * this.speed;
-      this.y += Math.sin(this.angle) * this.speed + this.gravity;
-      this.opacity -= 0.01;
-      this.speed *= 0.98;
-    }
-    draw() {
-      ctx.globalAlpha = this.opacity;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = this.color;
-      ctx.fill();
-    }
-  }
-
-  const fireworks = [];
-
-  function createFirework(x, y) {
-    const colors = ["#ff4444", "#44ff44", "#4444ff", "#ffff44", "#ff44ff", "#44ffff"];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    for (let i = 0; i < 50; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 4 + 1;
-      fireworks.push(new Particle(x, y, color, speed, angle));
-    }
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    fireworks.forEach((p, index) => {
-      p.update();
-      p.draw();
-      if (p.opacity <= 0) fireworks.splice(index, 1);
-    });
-    requestAnimationFrame(animate);
-  }
-
-  window.addEventListener("click", (e) => createFirework(e.clientX, e.clientY));
-
-  setInterval(() => {
-    createFirework(Math.random() * canvas.width, Math.random() * canvas.height * 0.5);
-  }, 1000);
-
-  animate();
-
-  window.addEventListener("resize", () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
-</script>
 
 </body>
 </html>
