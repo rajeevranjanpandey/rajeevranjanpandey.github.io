@@ -22,38 +22,39 @@ body{
 body::before{
   content:"";
   position:fixed;
-  width:600px;
-  height:600px;
-  background:radial-gradient(circle,rgba(0,255,213,0.08),transparent 70%);
-  top:-100px;
-  left:-100px;
+  width:500px;
+  height:500px;
+  background:radial-gradient(circle,rgba(0,255,213,0.06),transparent 70%);
+  top:-80px;
+  left:-80px;
   z-index:0;
 }
 
 /* HEADER */
 header{
   text-align:center;
-  padding:80px 20px 40px;
+  padding:60px 20px 30px;
   position:relative;
   z-index:1;
 }
 
 header h1{
-  font-size:2.8rem;
+  font-size:2.6rem;
   font-weight:600;
 }
 
 header p{
-  margin-top:10px;
+  margin-top:8px;
   color:var(--muted);
+  font-size:0.95rem;
 }
 
 /* NAV */
 nav{
   display:flex;
   justify-content:center;
-  gap:30px;
-  padding:15px;
+  gap:25px;
+  padding:12px;
   background:#0f0f0f;
   position:sticky;
   top:0;
@@ -63,8 +64,8 @@ nav{
 nav a{
   color:#ccc;
   text-decoration:none;
-  font-size:0.95rem;
-  transition:0.3s;
+  font-size:0.9rem;
+  transition:0.25s;
 }
 
 nav a:hover{
@@ -73,67 +74,76 @@ nav a:hover{
 
 /* SECTION */
 section{
-  padding:70px 10%;
+  padding:40px 10%;
   position:relative;
   z-index:1;
 }
 
+/* HEADINGS */
 h2{
-  font-size:1.6rem;
-  margin-bottom:20px;
+  font-size:1.5rem;
+  margin-bottom:12px;
   border-left:3px solid var(--accent);
   padding-left:10px;
+}
+
+/* TEXT */
+p{
+  margin-bottom:10px;
+  line-height:1.6;
+  font-size:0.95rem;
 }
 
 /* CARDS */
 .card{
   background:var(--card);
-  padding:22px;
-  margin:20px 0;
-  border-radius:12px;
+  padding:18px;
+  margin:14px 0;
+  border-radius:10px;
   border:1px solid rgba(255,255,255,0.05);
-  transition:0.35s;
+  transition:0.3s;
 }
 
 .card:hover{
-  transform:translateY(-4px);
-  border-color:rgba(0,255,213,0.3);
-  box-shadow:0 0 25px rgba(0,255,213,0.08);
+  transform:translateY(-3px);
+  border-color:rgba(0,255,213,0.25);
+  box-shadow:0 0 20px rgba(0,255,213,0.06);
 }
 
 .card b{
   font-weight:600;
 }
 
-/* TEXT */
+/* SMALL TEXT */
 .small{
-  font-size:0.9rem;
+  font-size:0.85rem;
   color:var(--muted);
 }
 
-/* PATENT */
+/* PATENT HIGHLIGHT */
 .highlight{
-  border:1px solid rgba(0,255,213,0.5);
-  background:linear-gradient(145deg,#0f1f1c,#0a0a0a);
+  border:1px solid rgba(0,255,213,0.4);
+  background:linear-gradient(145deg,#0e1c19,#0a0a0a);
 }
 
 /* FOOTER */
 footer{
   text-align:center;
-  padding:30px;
+  padding:25px;
   color:#666;
+  font-size:0.85rem;
 }
 
 /* ANIMATION */
 .fade{
   opacity:0;
-  transform:translateY(20px);
-  animation:fadeIn 0.8s ease forwards;
+  transform:translateY(15px);
+  animation:fadeIn 0.7s ease forwards;
 }
 
-.fade:nth-child(2){animation-delay:0.2s;}
-.fade:nth-child(3){animation-delay:0.4s;}
-.fade:nth-child(4){animation-delay:0.6s;}
+.fade:nth-child(2){animation-delay:0.15s;}
+.fade:nth-child(3){animation-delay:0.3s;}
+.fade:nth-child(4){animation-delay:0.45s;}
 
 @keyframes fadeIn{
   to{
