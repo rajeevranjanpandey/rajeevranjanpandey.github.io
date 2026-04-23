@@ -18,7 +18,7 @@ body{
   color:var(--text);
 }
 
-/* Subtle background glow */
+/* subtle glow */
 body::before{
   content:"";
   position:fixed;
@@ -48,7 +48,7 @@ header p{
   color:var(--muted);
 }
 
-/* NAVBAR */
+/* NAV */
 nav{
   display:flex;
   justify-content:center;
@@ -71,7 +71,7 @@ nav a:hover{
   color:var(--accent);
 }
 
-/* SECTIONS */
+/* SECTION */
 section{
   padding:70px 10%;
   position:relative;
@@ -111,7 +111,7 @@ h2{
   color:var(--muted);
 }
 
-/* PATENT HIGHLIGHT */
+/* PATENT */
 .highlight{
   border:1px solid rgba(0,255,213,0.5);
   background:linear-gradient(145deg,#0f1f1c,#0a0a0a);
@@ -124,7 +124,7 @@ footer{
   color:#666;
 }
 
-/* FADE ANIMATION */
+/* ANIMATION */
 .fade{
   opacity:0;
   transform:translateY(20px);
