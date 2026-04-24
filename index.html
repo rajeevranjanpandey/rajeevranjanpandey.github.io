@@ -3,154 +3,1282 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ganesh Kumar Pandey</title>
+<title>Ganesh Kumar Pandey — Inventor · Researcher · Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --bg:      #020609;
+  --s1:      #060f18;
+  --s2:      #091622;
+  --accent:  #00c8ff;
+  --accent2: #7c4dff;
+  --amber:   #ffab40;
+  --green:   #00e676;
+  --text:    #d8eaf5;
+  --muted:   #4a7a96;
+  --border:  rgba(0,200,255,0.1);
+  --glow:    rgba(0,200,255,0.12);
+}
 
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.08s, width 0.2s, height 0.2s, opacity 0.2s;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(0,200,255,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.25s ease, width 0.25s, height 0.25s;
+}
+body:hover #cursor { opacity: 1; }
+
+/* ── CANVAS BACKGROUND ── */
+#canvas-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+/* ── NOISE OVERLAY ── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+/* ── LAYOUT WRAPPER ── */
+.wrap { position: relative; z-index: 2; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%;
+  height: 60px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(2,6,9,0.8);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 0 40px rgba(0,200,255,0.08); }
+
+.nav-logo {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s;
+}
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--accent); }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 8%;
+  position: relative;
+}
+
+.hero-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: rise 0.8s 0.2s ease forwards;
+}
+
+.hero-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -1px;
+  color: var(--text);
+  position: relative;
+  opacity: 0;
+  animation: rise 0.8s 0.4s ease forwards;
+}
+.hero-name span { color: var(--accent); }
+
+/* Glitch */
+.glitch {
+  position: relative;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.glitch::before {
+  color: var(--accent2);
+  animation: glitch-top 4s infinite 2s;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translateX(0);
+}
+.glitch::after {
+  color: #ff4466;
+  animation: glitch-bot 4s infinite 2.5s;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+}
+@keyframes glitch-top {
+  0%,90%,100% { transform: none; opacity: 0; }
+  91% { transform: translateX(-4px); opacity: 0.8; }
+  93% { transform: translateX(4px); opacity: 0.8; }
+  95% { transform: none; opacity: 0; }
+}
+@keyframes glitch-bot {
+  0%,90%,100% { transform: none; opacity: 0; }
+  92% { transform: translateX(4px); opacity: 0.8; }
+  94% { transform: translateX(-4px); opacity: 0.8; }
+  96% { transform: none; opacity: 0; }
+}
+
+.hero-tagline {
+  margin-top: 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  color: var(--muted);
+  font-weight: 300;
+  opacity: 0;
+  animation: rise 0.8s 0.6s ease forwards;
+}
+.hero-tagline .type-cursor {
+  color: var(--accent);
+  animation: blink 0.8s infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+.hero-desc {
+  margin-top: 32px;
+  max-width: 600px;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(216,234,245,0.65);
+  font-weight: 300;
+  opacity: 0;
+  animation: rise 0.8s 0.8s ease forwards;
+}
+
+.hero-cta {
+  margin-top: 40px;
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+  animation: rise 0.8s 1s ease forwards;
+}
+.btn-primary, .btn-ghost {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: all 0.25s;
+  cursor: none;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  font-weight: 400;
+}
+.btn-primary:hover { background: #33d4ff; box-shadow: 0 0 30px rgba(0,200,255,0.4); }
+.btn-ghost {
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.hero-stats {
+  position: absolute;
+  right: 8%;
+  bottom: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  opacity: 0;
+  animation: rise 0.8s 1.2s ease forwards;
+}
+.stat {
+  text-align: right;
+}
+.stat-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: rise 1s 1.5s ease forwards;
+}
+.scroll-hint span {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scroll-pulse 2s infinite;
+}
+@keyframes scroll-pulse {
+  0%,100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION BASE ── */
+section {
+  padding: 100px 8%;
+  position: relative;
+}
+section + section { border-top: 1px solid rgba(0,200,255,0.05); }
+
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 48px;
+}
+h2 em { color: var(--accent); font-style: normal; }
+
+/* ── REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── ABOUT ── */
+#about .about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+.about-text p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: rgba(216,234,245,0.75);
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+.about-text p strong {
+  color: var(--text);
+  font-weight: 400;
+}
+.about-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+.tag:hover { border-color: var(--accent); color: var(--accent); }
+
+.about-panel {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.about-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.panel-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.panel-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.panel-item:last-child { border-bottom: none; margin-bottom: 0; }
+.panel-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--accent);
+}
+.panel-item p { font-size: 0.88rem; line-height: 1.5; color: rgba(216,234,245,0.7); }
+.panel-item p strong { color: var(--text); font-weight: 500; }
+
+/* ── RESEARCH AREAS ── */
+#research .research-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.research-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 28px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: none;
+}
+.research-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(0,200,255,0.06), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.research-card:hover {
+  border-color: rgba(0,200,255,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(0,200,255,0.06);
+}
+.research-card:hover::after { opacity: 1; }
+.rc-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: rgba(0,200,255,0.1);
+  line-height: 1;
+  margin-bottom: 12px;
+  transition: color 0.3s;
+}
+.research-card:hover .rc-num { color: rgba(0,200,255,0.2); }
+.rc-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.rc-desc {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.rc-tag {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+/* ── SYSTEMS (PROJECTS) ── */
+#projects .systems-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.system-card {
+  background: var(--s1);
+  padding: 36px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+  cursor: none;
+}
+.system-card:hover { background: var(--s2); }
+.sys-icon {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.sys-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.sys-desc {
+  font-size: 0.83rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.sys-line {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  transition: width 0.4s;
+}
+.system-card:hover .sys-line { width: 100%; }
+
+/* ── PUBLICATIONS ── */
+#publications .pub-list { display: flex; flex-direction: column; gap: 16px; }
+
+.pub-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px 28px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+  transition: all 0.3s;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+}
+.pub-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+.pub-card:hover { border-color: rgba(0,200,255,0.25); transform: translateX(4px); }
+.pub-card:hover::before { width: 2px; }
+
+.pub-year {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(0,200,255,0.15);
+  line-height: 1;
+  min-width: 56px;
+  text-align: center;
+  transition: color 0.3s;
+}
+.pub-card:hover .pub-year { color: rgba(0,200,255,0.35); }
+
+.pub-body { flex: 1; }
+.pub-title {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.pub-venue {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+.badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 2px;
+  white-space: nowrap;
+  font-weight: 400;
+}
+.badge.published  { background: rgba(0,230,118,0.1);  color: var(--green);  border: 1px solid rgba(0,230,118,0.2); }
+.badge.review     { background: rgba(255,171,64,0.1); color: var(--amber);  border: 1px solid rgba(255,171,64,0.2); }
+.badge.submitted  { background: rgba(124,77,255,0.1); color: #a07aff;       border: 1px solid rgba(124,77,255,0.2); }
+
+/* ── PATENT ── */
+#patent .patent-card {
+  background: var(--s1);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius: 4px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: center;
+}
+.patent-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 50%, rgba(0,200,255,0.05), transparent 60%);
+}
+.patent-card::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.patent-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.patent-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 16px;
+}
+.patent-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.patent-seal {
+  width: 100px; height: 100px;
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+  position: relative;
+  animation: spin-slow 20s linear infinite;
+}
+.patent-seal::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px dashed rgba(0,200,255,0.15);
+}
+.seal-icon { font-size: 1.8rem; }
+.seal-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── CONTACT ── */
+#contact .contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+.contact-heading {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+.contact-heading em { color: var(--accent); font-style: normal; }
+.contact-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+.contact-email {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,200,255,0.2);
+  padding-bottom: 4px;
+  transition: border-color 0.2s;
+}
+.contact-email:hover { border-color: var(--accent); }
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+}
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.25s;
+  cursor: none;
+}
+.social-link:hover {
+  border-color: rgba(0,200,255,0.3);
+  transform: translateX(6px);
+  background: var(--s2);
+}
+.social-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(0,200,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.social-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.social-handle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+.social-arrow {
+  margin-left: auto;
+  color: var(--muted);
+  transition: color 0.2s, transform 0.2s;
+}
+.social-link:hover .social-arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 8%;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.footer-left {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+.footer-right {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(74,122,150,0.5);
+}
+
+/* ── DIVIDER LINE ── */
+.h-line {
+  width: 40px;
+  height: 1px;
+  background: var(--accent);
+  margin-bottom: 32px;
+  opacity: 0.5;
+}
+
+</style>
 </head>
-
 <body>
 
-<header class="fade">
-  <h1>Ganesh Kumar Pandey</h1>
-  <p>Inventor | Energy Systems | Optimization | AI for Structured Systems</p>
-</header>
+<canvas id="canvas-bg"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
 
-<!-- Research Identity -->
-<section class="fade" style="text-align:center; padding-top:10px;">
-  <p class="small" style="max-width:700px; margin:auto;">
-    Focused on optimization-driven modeling of energy systems and development of causality-aware AI frameworks for structured decision-making in cyber-physical networks.
-  </p>
-</section>
+<div class="wrap">
 
-<nav>
-  <a href="#about">About</a>
-  <a href="#research">Research</a>
-  <a href="#projects">Systems</a>
-  <a href="#publications">Publications</a>
-  <a href="#patent">Patent</a>
-  <a href="#contact">Contact</a>
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">GKP</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#projects">Systems</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#patent">Patent</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
 </nav>
 
-<!-- ABOUT -->
-<section id="about" class="fade">
-  <h2>About</h2>
-  <p>
-I work on system-level modeling and optimization of large-scale energy networks,
-with emphasis on decentralized coordination, EV charging, and cyber-physical systems.
-My research integrates mathematical optimization, metaheuristic design, and structured AI.
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-label">// Inventor · Researcher · Engineer</p>
+  <h1 class="hero-name glitch" data-text="Ganesh Kumar Pandey">Ganesh Kumar<br><span>Pandey</span></h1>
+  <p class="hero-tagline"><span id="typetext"></span><span class="type-cursor">|</span></p>
+  <p class="hero-desc">
+    Working at the intersection of energy systems, decentralized optimization,
+    and causality-aware AI — building the mathematical frameworks that power
+    tomorrow's cyber-physical infrastructure.
   </p>
+  <div class="hero-cta">
+    <a href="#publications" class="btn-primary">View Research</a>
+    <a href="#contact" class="btn-ghost">Get in Touch</a>
+  </div>
 
-  <p class="small">
-Focus: physically consistent modeling, scalable algorithms, and decision reliability in real-world systems.
-  </p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" data-count="5">0</div>
+      <div class="stat-label">Papers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="1">0</div>
+      <div class="stat-label">Patent</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="4">0</div>
+      <div class="stat-label">Research Areas</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-label reveal">// 01 — Profile</p>
+  <h2 class="reveal">About <em>Me</em></h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>
+        I work on <strong>system-level modeling and optimization</strong> of large-scale energy networks,
+        with emphasis on decentralized coordination, EV charging, and cyber-physical systems.
+      </p>
+      <p>
+        My research integrates <strong>mathematical optimization</strong>, metaheuristic design,
+        and structured AI to build decision-reliable frameworks for real-world infrastructure.
+      </p>
+      <p>
+        Focused on physically consistent modeling, scalable algorithms, and causal reasoning
+        in systems where correctness is non-negotiable.
+      </p>
+      <div class="about-tags">
+        <span class="tag">Energy Systems</span>
+        <span class="tag">Optimization</span>
+        <span class="tag">Causal AI</span>
+        <span class="tag">Smart Grids</span>
+        <span class="tag">EV Charging</span>
+        <span class="tag">Blockchain</span>
+        <span class="tag">Metaheuristics</span>
+        <span class="tag">IIT Kharagpur</span>
+      </div>
+    </div>
+    <div class="about-panel reveal">
+      <p class="panel-title">// Current Focus</p>
+      <div class="panel-item">
+        <div class="panel-dot"></div>
+        <p><strong>Locational Congestion Pricing</strong> — Voltage-aware decentralized EV charging coordination in coupled traffic–power networks</p>
+      </div>
+      <div class="panel-item">
+        <div class="panel-dot"></div>
+        <p><strong>Causality-Constrained Attention</strong> — Counterfactual consistency in structured temporal AI systems</p>
+      </div>
+      <div class="panel-item">
+        <div class="panel-dot"></div>
+        <p><strong>Tiger Footprint Optimization (TFO)</strong> — Novel probe-placement metaheuristic with adaptive step scaling</p>
+      </div>
+      <div class="panel-item">
+        <div class="panel-dot"></div>
+        <p><strong>Blockchain P2P Energy Trading</strong> — Peer-to-peer exchange with storage and grid interaction modeling</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- RESEARCH -->
-<section id="research" class="fade">
-  <h2>Research Areas</h2>
+<section id="research">
+  <p class="section-label reveal">// 02 — Domains</p>
+  <h2 class="reveal">Research <em>Areas</em></h2>
+  <div class="research-grid">
 
-  <div class="card">Decentralized Energy Systems & Smart Grids</div>
-  <div class="card">Coupled Traffic–Power Network Optimization</div>
-  <div class="card">Metaheuristic Algorithms (TFO, PSO)</div>
-  <div class="card">Causal AI for Structured Temporal Systems</div>
+    <div class="research-card reveal">
+      <div class="rc-num">01</div>
+      <div class="rc-title">Decentralized Energy Systems & Smart Grids</div>
+      <div class="rc-desc">Distributed coordination protocols, islanded microgrids, droop-based control, and grid stability at scale.</div>
+      <span class="rc-tag">→ Power Systems</span>
+    </div>
 
+    <div class="research-card reveal">
+      <div class="rc-num">02</div>
+      <div class="rc-title">Coupled Traffic–Power Network Optimization</div>
+      <div class="rc-desc">Joint modeling of mobility patterns and grid constraints for voltage-aware, congestion-priced EV charging.</div>
+      <span class="rc-tag">→ EV Infrastructure</span>
+    </div>
+
+    <div class="research-card reveal">
+      <div class="rc-num">03</div>
+      <div class="rc-title">Metaheuristic Algorithms</div>
+      <div class="rc-desc">Nature-inspired optimization — TFO, PSO — for nonlinear, non-convex engineering problems with real-world constraints.</div>
+      <span class="rc-tag">→ Computational Intelligence</span>
+    </div>
+
+    <div class="research-card reveal">
+      <div class="rc-num">04</div>
+      <div class="rc-title">Causal AI for Structured Temporal Systems</div>
+      <div class="rc-desc">Causality-constrained neural architectures that maintain counterfactual consistency in time-series inference.</div>
+      <span class="rc-tag">→ AI / ML</span>
+    </div>
+
+  </div>
 </section>
 
-<!-- PROJECTS -->
-<section id="projects" class="fade">
-  <h2>Key Systems</h2>
+<!-- PROJECTS / SYSTEMS -->
+<section id="projects">
+  <p class="section-label reveal">// 03 — Engineering</p>
+  <h2 class="reveal">Key <em>Systems</em></h2>
+  <div class="systems-grid reveal">
 
-  <div class="card">
-    <b>EV Charging Coordination</b>
-    <p class="small">Voltage-aware decentralized optimization in coupled traffic–power networks</p>
+    <div class="system-card">
+      <span class="sys-icon">⚡</span>
+      <div class="sys-title">EV Charging Coordination</div>
+      <div class="sys-desc">Voltage-aware decentralized optimization using closed-form locational congestion pricing in coupled traffic–power networks. Handles real-time grid constraints and mobility demand simultaneously.</div>
+      <div class="sys-line"></div>
+    </div>
+
+    <div class="system-card">
+      <span class="sys-icon">🔗</span>
+      <div class="sys-title">Blockchain Energy Trading</div>
+      <div class="sys-desc">End-to-end peer-to-peer energy exchange platform with battery storage integration, utility fallback mechanisms, and full grid impact analysis.</div>
+      <div class="sys-line"></div>
+    </div>
+
+    <div class="system-card">
+      <span class="sys-icon">🐯</span>
+      <div class="sys-title">Tiger Footprint Optimization</div>
+      <div class="sys-desc">Adaptive metaheuristic algorithm inspired by tiger hunting patterns. Probe-placement strategy with dynamic step scaling for nonlinear engineering optimization benchmarks.</div>
+      <div class="sys-line"></div>
+    </div>
+
   </div>
-
-  <div class="card">
-    <b>Blockchain Energy Trading</b>
-    <p class="small">Peer-to-peer energy exchange with storage and grid interaction modeling</p>
-  </div>
-
-  <div class="card">
-    <b>Tiger Footprint Optimization (TFO)</b>
-    <p class="small">Adaptive metaheuristic for nonlinear engineering optimization</p>
-  </div>
-
 </section>
 
 <!-- PUBLICATIONS -->
-<section id="publications" class="fade">
-  <h2>Publications</h2>
+<section id="publications">
+  <p class="section-label reveal">// 04 — Output</p>
+  <h2 class="reveal">Publications</h2>
+  <div class="pub-list">
 
-  <div class="card fade">
-    <b>Economic Dispatch in Islanded Microgrids Using Droop Parameterization with Demand Response Integration</b><br>
-    <span class="small">
-      International Journal of Ambient Energy, 2024 
+    <div class="pub-card reveal">
+      <div class="pub-year">24</div>
+      <div class="pub-body">
+        <div class="pub-title">Economic Dispatch in Islanded Microgrids Using Droop Parameterization with Demand Response Integration</div>
+        <div class="pub-venue">International Journal of Ambient Energy</div>
+      </div>
       <span class="badge published">Published</span>
-    </span>
-  </div>
+    </div>
 
-  <div class="card fade">
-    <b>Causality-Constrained Attention for Counterfactual Consistency in Structured Temporal Systems</b><br>
-    <span class="small">
-      IEEE Transactions on Artificial Intelligence 
+    <div class="pub-card reveal">
+      <div class="pub-year">25</div>
+      <div class="pub-body">
+        <div class="pub-title">Causality-Constrained Attention for Counterfactual Consistency in Structured Temporal Systems</div>
+        <div class="pub-venue">IEEE Transactions on Artificial Intelligence</div>
+      </div>
       <span class="badge review">Under Review</span>
-    </span>
-  </div>
+    </div>
 
-  <div class="card fade">
-    <b>End-to-End Blockchain-Enabled Peer-to-Peer Energy Trading with Storage, Utility Fallback, and Grid Impact Analysis</b><br>
-    <span class="small">
-      Sustainable Energy, Grids and Networks 
+    <div class="pub-card reveal">
+      <div class="pub-year">25</div>
+      <div class="pub-body">
+        <div class="pub-title">End-to-End Blockchain-Enabled Peer-to-Peer Energy Trading with Storage, Utility Fallback, and Grid Impact Analysis</div>
+        <div class="pub-venue">Sustainable Energy, Grids and Networks</div>
+      </div>
       <span class="badge review">Under Review</span>
-    </span>
-  </div>
+    </div>
 
-  <div class="card fade">
-    <b>Closed-Form Locational Congestion Pricing for Voltage-Aware Decentralized EV Charging Coordination in Coupled Traffic–Power Networks</b><br>
-    <span class="small">
-      Journal (Under Review) 
+    <div class="pub-card reveal">
+      <div class="pub-year">26</div>
+      <div class="pub-body">
+        <div class="pub-title">Closed-Form Locational Congestion Pricing for Voltage-Aware Decentralized EV Charging Coordination in Coupled Traffic–Power Networks</div>
+        <div class="pub-venue">Journal Under Review</div>
+      </div>
       <span class="badge review">Under Review</span>
-    </span>
-  </div>
+    </div>
 
-  <div class="card fade">
-    <b>Tiger Footprint Optimization (TFO): A Probe-Placement Metaheuristic with Adaptive Step Scaling</b><br>
-    <span class="small">
-      Engineering Applications of Artificial Intelligence 
+    <div class="pub-card reveal">
+      <div class="pub-year">26</div>
+      <div class="pub-body">
+        <div class="pub-title">Tiger Footprint Optimization (TFO): A Probe-Placement Metaheuristic with Adaptive Step Scaling</div>
+        <div class="pub-venue">Engineering Applications of Artificial Intelligence</div>
+      </div>
       <span class="badge submitted">Submitted</span>
-    </span>
-  </div>
+    </div>
 
+  </div>
 </section>
 
 <!-- PATENT -->
-<section id="patent" class="fade">
-  <h2>Patent</h2>
-
-  <div class="card highlight">
-    <b>Causality-Constrained Attention-Based System for Counterfactual Decision Support in Structured Temporal Systems</b><br>
-    <span class="small">Indian Patent — Provisional Filed</span>
+<section id="patent">
+  <p class="section-label reveal">// 05 — Intellectual Property</p>
+  <h2 class="reveal">Patent</h2>
+  <div class="patent-card reveal">
+    <div>
+      <p class="patent-label">// Indian Patent — Provisional Filed</p>
+      <h3 class="patent-title">Causality-Constrained Attention-Based System for Counterfactual Decision Support in Structured Temporal Systems</h3>
+      <p class="patent-meta">Status: Provisional Filed &nbsp;·&nbsp; Jurisdiction: India &nbsp;·&nbsp; Filed: 2025</p>
+    </div>
+    <div class="patent-seal">
+      <span class="seal-icon">⚙️</span>
+      <span class="seal-text">Patent</span>
+    </div>
   </div>
-
 </section>
 
 <!-- CONTACT -->
-<section id="contact" class="fade">
-  <h2>Contact</h2>
-  <p>Email: ganeshpandey@iitkgp.ac.in</p>
-
-  <p class="small">
-    <a href="#">Google Scholar</a> • 
-    <a href="#">GitHub</a> • 
-    <a href="#">LinkedIn</a>
-  </p>
+<section id="contact">
+  <p class="section-label reveal">// 06 — Connect</p>
+  <div class="contact-grid">
+    <div class="reveal">
+      <h2 style="margin-bottom:16px;">Let's <em>Talk</em></h2>
+      <div class="h-line"></div>
+      <p class="contact-sub">
+        Open to research collaborations, technical discussions, and opportunities
+        at the intersection of energy systems, optimization, and AI.
+      </p>
+      <a class="contact-email" href="mailto:ganeshpandey@iitkgp.ac.in">ganeshpandey@iitkgp.ac.in</a>
+      <p style="margin-top:12px; font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--muted); letter-spacing:1px;">
+        IIT KHARAGPUR, WEST BENGAL, INDIA
+      </p>
+    </div>
+    <div class="social-links reveal">
+      <a href="#" class="social-link">
+        <div class="social-icon">🎓</div>
+        <div>
+          <div class="social-name">Google Scholar</div>
+          <div class="social-handle">Research Profile</div>
+        </div>
+        <span class="social-arrow">→</span>
+      </a>
+      <a href="#" class="social-link">
+        <div class="social-icon">💻</div>
+        <div>
+          <div class="social-name">GitHub</div>
+          <div class="social-handle">Open Source Projects</div>
+        </div>
+        <span class="social-arrow">→</span>
+      </a>
+      <a href="#" class="social-link">
+        <div class="social-icon">💼</div>
+        <div>
+          <div class="social-name">LinkedIn</div>
+          <div class="social-handle">Professional Network</div>
+        </div>
+        <span class="social-arrow">→</span>
+      </a>
+    </div>
+  </div>
 </section>
 
 <footer>
-  © 2026 Ganesh Kumar Pandey
+  <span class="footer-left">© 2026 Ganesh Kumar Pandey</span>
+  <span class="footer-right">Inventor · Researcher · Engineer</span>
 </footer>
 
+</div><!-- /wrap -->
+
+<script>
+/* ── CANVAS NETWORK ANIMATION ── */
+(function(){
+  const canvas = document.getElementById('canvas-bg');
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes;
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    init();
+  }
+
+  function init(){
+    nodes = Array.from({length: 60}, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 1.5 + 0.5
+    }));
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    const maxDist = 160;
+    for(let i = 0; i < nodes.length; i++){
+      const n = nodes[i];
+      n.x += n.vx; n.y += n.vy;
+      if(n.x < 0 || n.x > W) n.vx *= -1;
+      if(n.y < 0 || n.y > H) n.vy *= -1;
+
+      for(let j = i+1; j < nodes.length; j++){
+        const m = nodes[j];
+        const dx = m.x - n.x, dy = m.y - n.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < maxDist){
+          const alpha = (1 - dist/maxDist) * 0.3;
+          ctx.strokeStyle = `rgba(0,200,255,${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(n.x, n.y);
+          ctx.lineTo(m.x, m.y);
+          ctx.stroke();
+        }
+      }
+
+      ctx.fillStyle = 'rgba(0,200,255,0.5)';
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+/* ── CUSTOM CURSOR ── */
+(function(){
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor(){
+    rx += (mx-rx)*0.15; ry += (my-ry)*0.15;
+    cur.style.left = mx+'px'; cur.style.top = my+'px';
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  document.querySelectorAll('a,button,.research-card,.system-card,.pub-card,.social-link').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.width = '6px'; cur.style.height = '6px';
+      ring.style.width = '60px'; ring.style.height = '60px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.width = '12px'; cur.style.height = '12px';
+      ring.style.width = '40px'; ring.style.height = '40px';
+    });
+  });
+})();
+
+/* ── TYPEWRITER ── */
+(function(){
+  const phrases = [
+    'Energy Systems Researcher',
+    'Optimization Engineer',
+    'Causal AI Inventor',
+    'PhD Candidate @ IIT KGP',
+  ];
+  let pi=0, ci=0, del=false;
+  const el = document.getElementById('typetext');
+
+  function type(){
+    const phrase = phrases[pi];
+    if(!del){
+      el.textContent = phrase.slice(0, ++ci);
+      if(ci === phrase.length){ del=true; setTimeout(type,1800); return; }
+      setTimeout(type, 60);
+    } else {
+      el.textContent = phrase.slice(0, --ci);
+      if(ci === 0){ del=false; pi=(pi+1)%phrases.length; setTimeout(type,400); return; }
+      setTimeout(type, 35);
+    }
+  }
+  setTimeout(type, 1200);
+})();
+
+/* ── SCROLL REVEAL ── */
+(function(){
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if(e.isIntersecting){
+        e.target.style.transitionDelay = (i*0.07)+'s';
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+
+/* ── NAV ACTIVE + SCROLLED ── */
+(function(){
+  const nav = document.getElementById('nav');
+  const links = document.querySelectorAll('.nav-links a');
+  const sections = document.querySelectorAll('section[id]');
+
+  window.addEventListener('scroll', () => {
+    if(window.scrollY > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+
+    let current = '';
+    sections.forEach(s => {
+      if(window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+    });
+  });
+})();
+
+/* ── STAT COUNTERS ── */
+(function(){
+  const els = document.querySelectorAll('[data-count]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        const target = +e.target.dataset.count;
+        let n = 0;
+        const step = () => {
+          n = Math.min(n+1, target);
+          e.target.textContent = n;
+          if(n < target) setTimeout(step, 120);
+        };
+        setTimeout(step, 600);
+        obs.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.5});
+  els.forEach(el => obs.observe(el));
+})();
+</script>
 </body>
 </html>
