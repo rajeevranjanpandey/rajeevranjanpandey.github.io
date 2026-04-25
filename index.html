@@ -1553,35 +1553,30 @@ footer {
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Mathematical Optimization</span>
-          <span class="skill-pct">95%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="95"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Power Systems Modeling</span>
-          <span class="skill-pct">92%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="92"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Causal AI &amp; Machine Learning</span>
-          <span class="skill-pct">88%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="88"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Metaheuristic Algorithm Design</span>
-          <span class="skill-pct">90%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Blockchain &amp; Smart Contracts</span>
-          <span class="skill-pct">80%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div>
       </div>
@@ -1591,35 +1586,30 @@ footer {
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Python (NumPy, SciPy, PyTorch)</span>
-          <span class="skill-pct">93%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="93"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">MATLAB / Simulink</span>
-          <span class="skill-pct">85%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="85"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">LaTeX Academic Writing</span>
-          <span class="skill-pct">90%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Convex/Non-convex Solvers</span>
-          <span class="skill-pct">87%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="87"></div></div>
       </div>
       <div class="skill-item">
         <div class="skill-header">
           <span class="skill-name">Network Simulation (Power Flow)</span>
-          <span class="skill-pct">91%</span>
         </div>
         <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="91"></div></div>
       </div>
@@ -1977,21 +1967,15 @@ footer {
     pulses = [];
 
     // Base sits at 88% down — towers are tall enough to reach vertical centre
-    const baseY   = H * 0.88;
-    // Fewer, wider-spaced towers so big ones don't crowd each other
-    const count   = Math.ceil(W / 360) + 2;
-    const spacing = W / (count - 1);
+    const baseY = H * 0.88;
 
-    // Much larger scales — towers will reach ~40-55% up the screen
-    const scaleOptions = [1.6, 2.0, 2.4, 1.8, 2.2, 1.7];
-
-    for(let i = 0; i < count; i++){
-      const bx   = i * spacing;
-      const s    = scaleOptions[i % scaleOptions.length];
-      // Slight y variation for realism
-      const by   = baseY + (Math.sin(i * 1.3) * 12);
-      towers.push({ bx, by, s });
-    }
+    // Exactly 3 towers: left edge, centre, right edge
+    const positions = [
+      { bx: W * 0.02,  s: 1.8,  by: baseY },
+      { bx: W * 0.5,   s: 2.4,  by: baseY - 8 },
+      { bx: W * 0.98,  s: 1.8,  by: baseY },
+    ];
+    positions.forEach(p => towers.push(p));
 
     // Create wire connections between adjacent towers (3 wires per span)
     for(let i = 0; i < towers.length - 1; i++){
