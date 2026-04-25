@@ -78,6 +78,15 @@ body {
   opacity: 0.5;
 }
 
+/* ── TOWER CANVAS ── */
+#tower-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 1;
+  pointer-events: none;
+}
+
 /* ── NOISE OVERLAY ── */
 body::after {
   content: "";
@@ -1171,6 +1180,7 @@ footer {
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
 
+<canvas id="tower-bg"></canvas>
 <canvas id="canvas-bg"></canvas>
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
@@ -1376,7 +1386,7 @@ footer {
 
     <div class="tl-item">
       <div class="tl-dot"></div>
-      <div class="tl-year">Present</div>
+      <div class="tl-year">2023 — Present</div>
       <div class="tl-title">PhD Researcher — Electrical Engineering</div>
       <div class="tl-org">Indian Institute of Technology Kharagpur</div>
       <div class="tl-desc">Doctoral research under Prof. Debapriya Das spanning decentralized energy system optimization, Causal AI, metaheuristic algorithms, and blockchain-based energy trading. Multiple papers published and under review in top-tier IEEE and Elsevier journals.</div>
@@ -1674,7 +1684,325 @@ footer {
 </div><!-- /wrap -->
 
 <script>
-/* ── CANVAS NETWORK ANIMATION ── */
+/* ── TRANSMISSION TOWER ANIMATION ── */
+(function(){
+  const canvas = document.getElementById('tower-bg');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  // Tower configuration
+  const TOWER_COLOR     = 'rgba(0,200,255,0.18)';
+  const WIRE_COLOR      = 'rgba(0,200,255,0.22)';
+  const WIRE_GLOW       = 'rgba(0,200,255,0.08)';
+  const INSULATOR_COLOR = 'rgba(0,200,255,0.35)';
+
+  // Pulse particles on wires
+  let pulses = [];
+  let towers = [];
+  let wires  = [];   // { p1, p2, sag, particles[] }
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    buildScene();
+  }
+
+  /* ── Draw a single lattice transmission tower ── */
+  function drawTower(ctx, bx, by, scale){
+    ctx.save();
+    ctx.strokeStyle = TOWER_COLOR;
+    ctx.lineWidth = 1.2 * scale;
+    ctx.lineCap = 'round';
+
+    const s = scale;
+    // bx, by = base center bottom of tower
+    const baseW  = 36 * s;   // base width at ground
+    const midW   = 18 * s;   // width at mid-body
+    const topW   = 10 * s;   // width at crossarm level
+    const h1     = 100 * s;  // ground to body top
+    const h2     = 20  * s;  // body top to crossarm
+    const h3     = 18  * s;  // crossarm to peak
+
+    // === Main body legs ===
+    ctx.beginPath();
+    // Left leg
+    ctx.moveTo(bx - baseW/2, by);
+    ctx.lineTo(bx - topW/2, by - h1);
+    // Right leg
+    ctx.moveTo(bx + baseW/2, by);
+    ctx.lineTo(bx + topW/2, by - h1);
+    ctx.stroke();
+
+    // Cross braces (X pattern) - 3 levels
+    const levels = 4;
+    for(let i = 0; i < levels; i++){
+      const t  = (i + 0.5) / levels;
+      const y0 = by - h1 * (i / levels);
+      const y1 = by - h1 * ((i+1) / levels);
+      const x0 = bx - (baseW/2 - (baseW/2 - topW/2) * (i/levels));
+      const x1 = bx + (baseW/2 - (baseW/2 - topW/2) * (i/levels));
+      const x2 = bx - (baseW/2 - (baseW/2 - topW/2) * ((i+1)/levels));
+      const x3 = bx + (baseW/2 - (baseW/2 - topW/2) * ((i+1)/levels));
+      ctx.beginPath();
+      ctx.moveTo(x0, y0); ctx.lineTo(x3, y1);
+      ctx.moveTo(x1, y0); ctx.lineTo(x2, y1);
+      // horizontal at each level
+      ctx.moveTo(x0, y0); ctx.lineTo(x1, y0);
+      ctx.stroke();
+    }
+    // Top horizontal
+    ctx.beginPath();
+    ctx.moveTo(bx - topW/2, by - h1);
+    ctx.lineTo(bx + topW/2, by - h1);
+    ctx.stroke();
+
+    // === Upper mast ===
+    ctx.beginPath();
+    ctx.moveTo(bx - topW/2, by - h1);
+    ctx.lineTo(bx - 5*s,    by - h1 - h2);
+    ctx.moveTo(bx + topW/2, by - h1);
+    ctx.lineTo(bx + 5*s,    by - h1 - h2);
+    ctx.moveTo(bx - 5*s,    by - h1 - h2);
+    ctx.lineTo(bx + 5*s,    by - h1 - h2);
+    ctx.stroke();
+
+    // === Crossarms (3 wires per side) ===
+    const armLen = 28 * s;
+    const armY   = by - h1 - h2;
+    const armOffsets = [-12*s, 0, 12*s];  // vertical spacing for triple wire
+    armOffsets.forEach(dy => {
+      const ay = armY + dy;
+      ctx.beginPath();
+      ctx.moveTo(bx - armLen, ay);
+      ctx.lineTo(bx + armLen, ay);
+      ctx.stroke();
+      // Insulators at ends
+      ctx.beginPath();
+      ctx.arc(bx - armLen, ay, 2.5*s, 0, Math.PI*2);
+      ctx.fillStyle = INSULATOR_COLOR;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(bx + armLen, ay, 2.5*s, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    // === Peak lightning rod ===
+    ctx.beginPath();
+    ctx.moveTo(bx, by - h1 - h2);
+    ctx.lineTo(bx, by - h1 - h2 - h3);
+    ctx.strokeStyle = 'rgba(0,200,255,0.35)';
+    ctx.lineWidth = 1 * s;
+    ctx.stroke();
+
+    // Ground anchors
+    ctx.beginPath();
+    ctx.moveTo(bx - baseW/2, by);
+    ctx.lineTo(bx - baseW/2 - 8*s, by);
+    ctx.moveTo(bx + baseW/2, by);
+    ctx.lineTo(bx + baseW/2 + 8*s, by);
+    ctx.strokeStyle = TOWER_COLOR;
+    ctx.lineWidth = 1.2 * s;
+    ctx.stroke();
+
+    ctx.restore();
+
+    // Return wire attachment points (top arm endpoints, 3 lines per side)
+    const wireY = armY;
+    return {
+      left:  { top: [{x: bx - armLen, y: wireY - 12*s}, {x: bx - armLen, y: wireY}, {x: bx - armLen, y: wireY + 12*s}] },
+      right: { top: [{x: bx + armLen, y: wireY - 12*s}, {x: bx + armLen, y: wireY}, {x: bx + armLen, y: wireY + 12*s}] },
+    };
+  }
+
+  /* ── Catenary curve: wire hanging under gravity ── */
+  function catenaryPoint(t, x1, y1, x2, y2, sag){
+    const x = x1 + (x2 - x1) * t;
+    const parabola = 4 * sag * t * (1 - t);
+    const y = y1 + (y2 - y1) * t + parabola;
+    return {x, y};
+  }
+
+  function drawWire(ctx, x1, y1, x2, y2, sag){
+    ctx.beginPath();
+    const steps = 60;
+    for(let i = 0; i <= steps; i++){
+      const t = i / steps;
+      const {x, y} = catenaryPoint(t, x1, y1, x2, y2, sag);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    // Glow pass
+    ctx.strokeStyle = WIRE_GLOW;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    // Sharp wire
+    ctx.beginPath();
+    for(let i = 0; i <= steps; i++){
+      const t = i / steps;
+      const {x, y} = catenaryPoint(t, x1, y1, x2, y2, sag);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = WIRE_COLOR;
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  /* ── Build scene based on viewport ── */
+  function buildScene(){
+    towers = [];
+    wires  = [];
+    pulses = [];
+
+    const baseY   = H * 0.92;      // towers sit near the bottom
+    const count   = Math.ceil(W / 220) + 1;
+    const spacing = W / (count - 1);
+
+    // Vary tower scales for depth effect
+    const scaleOptions = [0.6, 0.75, 0.9, 1.0, 0.7, 0.85];
+
+    for(let i = 0; i < count; i++){
+      const bx   = i * spacing;
+      const s    = scaleOptions[i % scaleOptions.length];
+      const by   = baseY + (Math.sin(i * 1.7) * 20 * (1 - s));
+      towers.push({ bx, by, s });
+    }
+
+    // Create wire connections between adjacent towers (3 wires per span)
+    for(let i = 0; i < towers.length - 1; i++){
+      const t1 = towers[i], t2 = towers[i+1];
+      const armLen1 = 28 * t1.s, armLen2 = 28 * t2.s;
+      const armY1   = t1.by - (100 + 20) * t1.s;
+      const armY2   = t2.by - (100 + 20) * t2.s;
+      const offsets = [-12, 0, 12];
+
+      offsets.forEach((dy, wi) => {
+        const x1  = t1.bx + armLen1;
+        const y1  = armY1 + dy * t1.s;
+        const x2  = t2.bx - armLen2;
+        const y2  = armY2 + dy * t2.s;
+        const sag = 18 * ((t1.s + t2.s) / 2);
+        wires.push({ x1, y1, x2, y2, sag, span: i, wireIdx: wi });
+
+        // Seed initial pulses on each wire
+        const numPulses = 1 + Math.floor(Math.random() * 2);
+        for(let p = 0; p < numPulses; p++){
+          pulses.push({
+            wire: wires.length - 1,
+            t:    Math.random(),
+            speed: 0.0012 + Math.random() * 0.0010,
+            size:  1.5 + Math.random() * 2,
+            alpha: 0.6 + Math.random() * 0.4,
+            trail: [],
+          });
+        }
+      });
+    }
+  }
+
+  /* ── Draw a pulse (glowing dot + trail) along a wire ── */
+  function drawPulse(ctx, pulse){
+    const w = wires[pulse.wire];
+    if(!w) return;
+    const {x, y} = catenaryPoint(pulse.t, w.x1, w.y1, w.x2, w.y2, w.sag);
+
+    // Trail
+    pulse.trail.forEach((pt, i) => {
+      const a = (i / pulse.trail.length) * pulse.alpha * 0.5;
+      const r = pulse.size * (i / pulse.trail.length) * 0.8;
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,200,255,${a})`;
+      ctx.fill();
+    });
+
+    // Core dot
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, pulse.size * 3);
+    grad.addColorStop(0, `rgba(255,255,255,${pulse.alpha})`);
+    grad.addColorStop(0.3, `rgba(0,200,255,${pulse.alpha * 0.9})`);
+    grad.addColorStop(1, 'rgba(0,200,255,0)');
+    ctx.beginPath();
+    ctx.arc(x, y, pulse.size * 3, 0, Math.PI*2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+
+  let tick = 0;
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    tick++;
+
+    // ── Draw wires (behind towers) ──
+    ctx.save();
+    wires.forEach(w => {
+      drawWire(ctx, w.x1, w.y1, w.x2, w.y2, w.sag);
+    });
+    ctx.restore();
+
+    // ── Draw towers ──
+    towers.forEach(t => drawTower(ctx, t.bx, t.by, t.s));
+
+    // ── Animate pulses ──
+    pulses.forEach(p => {
+      const w = wires[p.wire];
+      if(!w) return;
+      const {x, y} = catenaryPoint(p.t, w.x1, w.y1, w.x2, w.y2, w.sag);
+      p.trail.push({x, y});
+      if(p.trail.length > 18) p.trail.shift();
+
+      drawPulse(ctx, p);
+      p.t += p.speed;
+      if(p.t > 1){
+        p.t = 0;
+        p.trail = [];
+        // Occasionally jump to adjacent wire
+        if(Math.random() < 0.2){
+          const newWire = Math.max(0, Math.min(wires.length-1, p.wire + (Math.random()<0.5 ? 1 : -1)));
+          p.wire = newWire;
+        }
+      }
+    });
+
+    // Occasionally spawn an arc flash between wires at tower connection points
+    if(tick % 180 === 0 && wires.length > 1){
+      const wi = Math.floor(Math.random() * wires.length);
+      const w  = wires[wi];
+      drawArcFlash(ctx, w.x1, w.y1);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  /* ── Electric arc flash ── */
+  function drawArcFlash(ctx, x, y){
+    ctx.save();
+    const branches = 4 + Math.floor(Math.random()*4);
+    for(let i = 0; i < branches; i++){
+      const angle = (Math.random() * Math.PI * 2);
+      const len   = 8 + Math.random() * 20;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      let cx = x, cy = y;
+      const segs = 4;
+      for(let s = 0; s < segs; s++){
+        const da = angle + (Math.random()-0.5)*1.2;
+        cx += Math.cos(da) * len/segs;
+        cy += Math.sin(da) * len/segs;
+        ctx.lineTo(cx, cy);
+      }
+      ctx.strokeStyle = `rgba(180,240,255,${0.4 + Math.random()*0.5})`;
+      ctx.lineWidth = 0.8;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = 'rgba(0,200,255,0.8)';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+/* ── CANVAS NETWORK ANIMATION (floating nodes, above towers) ── */
 (function(){
   const canvas = document.getElementById('canvas-bg');
   const ctx = canvas.getContext('2d');
@@ -1687,28 +2015,27 @@ footer {
   }
 
   function init(){
-    nodes = Array.from({length: 65}, () => ({
+    nodes = Array.from({length: 50}, () => ({
       x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      r: Math.random() * 1.5 + 0.5
+      y: Math.random() * H * 0.75,   // only upper 75% — don't overlap towers
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 1.2 + 0.4
     }));
   }
 
   function draw(){
     ctx.clearRect(0, 0, W, H);
-    const maxDist = 160;
+    const maxDist = 150;
     for(let i = 0; i < nodes.length; i++){
       const n = nodes[i];
       n.x += n.vx; n.y += n.vy;
       if(n.x < 0 || n.x > W) n.vx *= -1;
-      if(n.y < 0 || n.y > H) n.vy *= -1;
+      if(n.y < 0 || n.y > H * 0.75) n.vy *= -1;
 
-      // Mouse repulsion
       const mdx = n.x - mouse.x, mdy = n.y - mouse.y;
       const mdist = Math.sqrt(mdx*mdx + mdy*mdy);
-      if(mdist < 120){ const f = (120-mdist)/120; n.vx += mdx/mdist*f*0.5; n.vy += mdy/mdist*f*0.5; }
+      if(mdist < 120 && mdist > 0){ const f = (120-mdist)/120; n.vx += mdx/mdist*f*0.4; n.vy += mdy/mdist*f*0.4; }
       n.vx *= 0.99; n.vy *= 0.99;
 
       for(let j = i+1; j < nodes.length; j++){
@@ -1716,17 +2043,16 @@ footer {
         const dx = m.x - n.x, dy = m.y - n.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         if(dist < maxDist){
-          const alpha = (1 - dist/maxDist) * 0.3;
+          const alpha = (1 - dist/maxDist) * 0.22;
           ctx.strokeStyle = `rgba(0,200,255,${alpha})`;
           ctx.lineWidth = 0.5;
           ctx.beginPath();
-          ctx.moveTo(n.x, n.y);
-          ctx.lineTo(m.x, m.y);
+          ctx.moveTo(n.x, n.y); ctx.lineTo(m.x, m.y);
           ctx.stroke();
         }
       }
 
-      ctx.fillStyle = 'rgba(0,200,255,0.5)';
+      ctx.fillStyle = 'rgba(0,200,255,0.45)';
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
       ctx.fill();
