@@ -1241,6 +1241,56 @@ footer {
 .osc-label   { left: 18px; }
 .osc-label-r { right: 18px; }
 
+
+/* ── ENTER BUTTON (boot screen) ── */
+#boot-enter {
+  display: none;
+  margin-top: 28px;
+  text-align: center;
+  animation: rise 0.6s ease forwards;
+}
+#boot-enter-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 14px 40px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+#boot-enter-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+  z-index: 0;
+}
+#boot-enter-btn:hover::before { transform: scaleX(1); }
+#boot-enter-btn:hover { color: #000; box-shadow: 0 0 30px rgba(0,200,255,0.4); }
+#boot-enter-btn span { position: relative; z-index: 1; }
+.boot-enter-sub {
+  display: block;
+  margin-top: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  color: rgba(0,200,255,0.4);
+  text-transform: uppercase;
+}
+@keyframes enter-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,200,255,0.4); }
+  50%      { box-shadow: 0 0 0 8px rgba(0,200,255,0); }
+}
+#boot-enter-btn { animation: enter-pulse 2s ease-in-out infinite; }
 </style>
 </head>
 <body>
@@ -1266,6 +1316,10 @@ footer {
       <span class="log-line" id="bl8">&gt; Verifying patent registry ... <span class="log-ok">[ 1 active ]</span></span>
       <span class="log-line" id="bl9">&gt; All systems nominal. <span class="log-hi">Launching interface ...</span><span class="boot-blink"></span></span>
     </div>
+    <div id="boot-enter">
+      <button id="boot-enter-btn"><span>⚡ Enter Site</span></button>
+      <span class="boot-enter-sub">// click to enable music &amp; launch</span>
+    </div>
   </div>
 </div>
 
@@ -1289,7 +1343,7 @@ footer {
 <div id="music-player">
   <button id="music-btn" title="Toggle Music">▶</button>
   <div class="music-info">
-    <span class="music-title">Background Theme</span>
+    <span class="music-title">Click ▶ to Play Music</span>
     <span class="music-status">PAUSED</span>
   </div>
   <div class="music-bars" id="music-bars">
@@ -2253,52 +2307,18 @@ footer {
   document.querySelectorAll('.expertise-grid > div').forEach(el => obs.observe(el));
 })();
 
-/* ── MUSIC PLAYER — plays on first user interaction ── */
+/* ── MUSIC PLAYER ── */
 (function(){
   const btn    = document.getElementById('music-btn');
   const audio  = document.getElementById('bg-audio');
   const bars   = document.getElementById('music-bars');
   const status = document.querySelector('.music-status');
   let playing  = false;
-  let started  = false;
 
   audio.volume = 0.25;
 
-  function startMusic(){
-    if(started) return;
-    started = true;
-    audio.currentTime = 0;
-    audio.play().then(() => {
-      playing = true;
-      btn.textContent    = '⏸';
-      bars.classList.add('playing');
-      status.textContent = 'PLAYING';
-    }).catch((e) => {
-      // If still blocked, reset so next interaction tries again
-      started = false;
-      console.warn('Audio blocked:', e);
-    });
-  }
-
-  // All interaction events that unlock audio in every browser
-  const events = ['scroll', 'touchstart', 'touchmove', 'mousedown', 'keydown', 'wheel'];
-  function onInteract(){
-    startMusic();
-    // Only remove after confirmed started
-    if(started){
-      events.forEach(ev => window.removeEventListener(ev, onInteract));
-      document.removeEventListener('scroll', onInteract);
-    }
-  }
-  events.forEach(ev => window.addEventListener(ev, onInteract, { passive: true }));
-  // Also listen on document for scroll (catches iframe scenarios)
-  document.addEventListener('scroll', onInteract, { passive: true });
-
-  // Manual play/pause toggle via button
   btn.addEventListener('click', () => {
-    if(!started){
-      startMusic();
-    } else if(playing){
+    if(playing){
       audio.pause();
       playing = false;
       btn.textContent    = '▶';
@@ -2317,15 +2337,21 @@ footer {
 
 /* ══ POWER-ON BOOT SEQUENCE ══ */
 (function(){
-  const screen  = document.getElementById('boot-screen');
-  const bar     = document.getElementById('boot-bar');
-  const lines   = 10;
+  const screen      = document.getElementById('boot-screen');
+  const bar         = document.getElementById('boot-bar');
+  const enterDiv    = document.getElementById('boot-enter');
+  const enterBtn    = document.getElementById('boot-enter-btn');
+  const audio       = document.getElementById('bg-audio');
+  const musicBtn    = document.getElementById('music-btn');
+  const bars        = document.getElementById('music-bars');
+  const musicStatus = document.querySelector('.music-status');
+
   const timings = [200, 450, 750, 1050, 1400, 1750, 2050, 2350, 2650, 3100];
   const barPcts  = [8,   18,  30,  44,   56,   68,   78,   87,   94,  100];
 
-  // Hide body content during boot
   document.body.style.overflow = 'hidden';
 
+  // Run boot log lines
   timings.forEach((t, i) => {
     setTimeout(() => {
       const el = document.getElementById('bl' + i);
@@ -2334,14 +2360,29 @@ footer {
     }, t);
   });
 
-  // Launch: fade out boot screen
+  // After sequence: show Enter button instead of auto-dismissing
   setTimeout(() => {
+    if(enterDiv) enterDiv.style.display = 'block';
+  }, 3500);
+
+  function launchSite(){
+    // This click = genuine user interaction → audio plays with sound
+    audio.volume = 0.25;
+    audio.play().then(() => {
+      if(musicBtn)    musicBtn.textContent    = '⏸';
+      if(bars)        bars.classList.add('playing');
+      if(musicStatus) musicStatus.textContent = 'PLAYING';
+    }).catch(() => {});
+
+    // Fade out boot screen
     screen.classList.add('fade-out');
     setTimeout(() => {
       screen.classList.add('hidden');
       document.body.style.overflow = '';
-    }, 750);
-  }, 3700);
+    }, 700);
+  }
+
+  if(enterBtn) enterBtn.addEventListener('click', launchSite);
 })();
 
 /* ══ OSCILLOSCOPE WAVEFORM ══ */
